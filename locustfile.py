@@ -1,24 +1,29 @@
-from locust import HttpLocust, TaskSet
+import random_name
+from locust import HttpLocust, TaskSet, wait_time, between
+
 
 def login(l):
-    l.client.post("/login", {"username":"jason", "password":""})
+    l.client.post("/login", {"username": random_name.generate_name(), "passwd": ""})
+
 
 def logout(l):
-    l.client.post("/logout", {"username":"jason", "password":""})
+    l.client.get("/logout")
+
 
 def productpage(l):
     l.client.get("/productpage")
 
+
 class UserBehavior(TaskSet):
     tasks = {productpage: 1}
 
-    def on_start(self):
-        login(self)
+    # def on_start(self):
+    #     login(self)
 
-    def on_stop(self):
-        logout(self)
+    # def on_stop(self):
+    #     logout(self)
+
 
 class WebsiteUser(HttpLocust):
     task_set = UserBehavior
-    min_wait = 5000
-    max_wait = 9000
+    wait_time = between(5000, 9000)
